@@ -1,0 +1,17 @@
+{
+  "name": "@dealmore/gh-action-terraform-module-release",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "author": "DealMore",
+  "scripts": {
+    "build": "ncc build -m src/index.js"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/exec": "^1.0.4",
+    "simple-git": "^2.36.1"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.27.0"
+  }
+}
