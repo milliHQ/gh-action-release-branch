@@ -19,6 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not see <http://www.gnu.org/licenses/gpl.html>
  */
+const globby = require('globby');
+
 module.exports = async function gitStripMerge(
   git,
   branch,
@@ -41,13 +43,21 @@ module.exports = async function gitStripMerge(
     return git.revparse(refName);
   }
 
+  const cwd = git._executor.cwd ? git._executor.cwd : process.cwd();
   const original = await gitBranch('HEAD');
   const branchSha = await git.revparse(branch);
 
   await git.checkout(original);
 
   await git.checkout(branchSha);
-  await git.raw(['rm', '-rf', ...excludePaths]);
+
+  // Get all files that should be excluded
+  const files = await globby(excludePaths, {
+    cwd,
+  });
+
+  await git.rm(files);
+  // await git.raw(['rm', '-rf', ...excludePaths]);
   await git.commit(deleteCommitMessage);
   const newSha = await git.revparse('HEAD');
   await git.checkout(original);

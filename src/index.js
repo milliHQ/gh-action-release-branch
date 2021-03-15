@@ -8,8 +8,28 @@ async function run() {
   const baseDir = path.join(process.cwd());
   const git = simpleGit({ baseDir });
   const releaseTag = core.getInput('release-tag', { required: true });
-  const releaseBranchName = 'release';
-  const upstreamBranchName = 'main';
+  const excluded = core.getInput('exclude', { required: true });
+  const releaseBranchName = core.getInput('release-branch', { required: true });
+  const upstreamBranchName = core.getInput('upstream-branch', {
+    required: true,
+  });
+
+  let excludedPatterns = [];
+
+  // Try to parse the `exclude` input
+  try {
+    const parsed = JSON.parse(excluded);
+    if (
+      Array.isArray(parsed) &&
+      parsed.find((item) => typeof item !== 'string') === undefined
+    ) {
+      excludedPatterns = parsed;
+    }
+  } catch (error) {
+    if (excluded) {
+      excludedPatterns = [excluded];
+    }
+  }
 
   // Push commits & tags on behalf of GitHub Actions bot
   // https://github.com/actions/checkout/issues/13#issuecomment-724415212
@@ -21,7 +41,7 @@ async function run() {
 
   // Switch to the release branch
   await git.checkout(releaseBranchName);
-  await stripMerge(git, upstreamBranchName, ['src/*']);
+  await stripMerge(git, upstreamBranchName, excludedPatterns);
 
   core.info(`Creating new tag ${releaseTag}`);
   await git.addAnnotatedTag(releaseTag, `Release ${releaseTag}`);

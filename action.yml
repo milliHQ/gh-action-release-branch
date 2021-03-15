@@ -6,10 +6,17 @@ inputs:
     description: >
       The name of the release branch.
     default: release
+  upstream-branch:
+    description: >
+      The name of the upstream branch that should be merged into the release branch.
+    default: main
   release-tag:
     description: >
       The tag that should be created for the release
     default: ${{ github.event.inputs.tag }}
+  exclude:
+    description: >
+      Glob patterns of files that should be excluded from release, supports arrays
 
 branding:
   icon: git-merge
