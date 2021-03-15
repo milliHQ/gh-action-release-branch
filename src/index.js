@@ -46,7 +46,8 @@ async function run() {
   core.info(`Creating new tag ${releaseTag}`);
   await git.addAnnotatedTag(releaseTag, `Release ${releaseTag}`);
 
-  // Push tag back to repo
+  // Push commits & tag back to repo
+  git.push('origin', releaseBranchName);
   git.pushTags('origin');
 }
 
