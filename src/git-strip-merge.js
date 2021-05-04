@@ -54,6 +54,8 @@ module.exports = async function gitStripMerge(
   // Get all files that should be excluded
   const files = await globby(excludePaths, {
     cwd,
+    // Include files that start with a dot (e.g. .gitignore)
+    dot: true,
   });
 
   // Running git rm without any paths would fail
