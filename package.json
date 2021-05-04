@@ -5,7 +5,9 @@
   "author": "DealMore",
   "scripts": {
     "test": "jest",
-    "build": "ncc build -m src/index.js"
+    "build": "ncc build -m src/index.js",
+    "lint:prettier": "prettier --check .",
+    "fix:prettier": "prettier --write ."
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
@@ -16,6 +18,7 @@
   "devDependencies": {
     "@vercel/ncc": "^0.27.0",
     "jest": "^26.6.3",
+    "prettier": "^2.2.1",
     "tmp": "^0.2.1"
   }
 }
