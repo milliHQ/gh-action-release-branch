@@ -107,4 +107,27 @@ describe('git strip merge', () => {
     commitCount = await git.raw(['rev-list', '--count', releaseBranch]);
     expect(Number(commitCount)).toBe(4);
   });
+
+  test('Dotfiles', async () => {
+    const excludePaths = ['src/**/*'];
+
+    createFile('main.tf', baseDir);
+    createFile('src/some/path/.gitignore', baseDir);
+    createFile('src/some/other/path/.gitkeep', baseDir);
+    expect(fileExists('main.tf')).toBeTruthy();
+    expect(fileExists('src/some/path/.gitignore')).toBeTruthy();
+    expect(fileExists('src/some/other/path/.gitkeep')).toBeTruthy();
+    await git.add('.').commit('Commit 1');
+
+    // Run strip merge
+    await git.checkout(releaseBranch);
+    await gitStripMerge(git, baseBranch, excludePaths);
+
+    // Total number of commits should be 4
+    let commitCount = await git.raw(['rev-list', '--count', releaseBranch]);
+    expect(Number(commitCount)).toBe(4);
+
+    expect(fileExists('src/some/path/.gitignore')).toBeFalsy();
+    expect(fileExists('src/some/other/path/.gitkeep')).toBeFalsy();
+  });
 });
