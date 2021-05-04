@@ -1,11 +1,11 @@
 {
   "name": "@dealmore/gh-action-terraform-module-release",
-  "version": "0.0.0",
+  "version": "1.1.0",
   "license": "Apache-2.0",
   "author": "DealMore",
   "scripts": {
     "test": "jest",
-    "build": "ncc build -m src/index.js",
+    "build": "ncc build -m src/index.js --license third-party-licenses.txt",
     "lint:prettier": "prettier --check .",
     "fix:prettier": "prettier --write ."
   },

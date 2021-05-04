@@ -1,4 +1,4 @@
-/**
+/*!
  * Git release flow that deletes files from branch before merging
  * --
  * Original by Rodrigo Silva, adapted for JavaScript
