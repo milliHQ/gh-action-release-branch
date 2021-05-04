@@ -50,7 +50,7 @@ describe('git strip merge', () => {
     createFile('src/some.js', baseDir);
     expect(fileExists('main.tf')).toBeTruthy();
     expect(fileExists('src/some.js')).toBeTruthy();
-    await git.add('./*').commit('Commit 1');
+    await git.add('.').commit('Commit 1');
 
     // Run strip merge
     await git.checkout(releaseBranch);
@@ -67,7 +67,7 @@ describe('git strip merge', () => {
     await git.checkout(baseBranch);
     createFile('src/some.js', baseDir, 'newContent');
     expect(fileExists('src/some.js')).toBeTruthy();
-    await git.add('./*').commit('Commit 2');
+    await git.add('.').commit('Commit 2');
 
     // Run strip merge again
     await git.checkout(releaseBranch);
@@ -79,5 +79,32 @@ describe('git strip merge', () => {
     // Total number of commits should be 7
     commitCount = await git.raw(['rev-list', '--count', releaseBranch]);
     expect(Number(commitCount)).toBe(7);
+  });
+
+  test('Commit only non ignored files', async () => {
+    const excludePaths = ['src/**/*'];
+
+    createFile('main.tf', baseDir);
+    expect(fileExists('main.tf')).toBeTruthy();
+    await git.add('.').commit('Commit 1');
+
+    createFile('variables.tf', baseDir);
+    expect(fileExists('variables.tf')).toBeTruthy();
+    await git.add('.').commit('Commit 2');
+
+    let commitCount = await git.raw(['rev-list', '--count', baseBranch]);
+    expect(Number(commitCount)).toBe(3);
+
+    // Run strip merge
+    await git.checkout(releaseBranch);
+    await gitStripMerge(git, baseBranch, excludePaths);
+
+    // Total number of commits should be 4 (No Delete commit)
+    // - Initial Commit
+    // - Commit 1
+    // - Commit 2
+    // - Merge Commit
+    commitCount = await git.raw(['rev-list', '--count', releaseBranch]);
+    expect(Number(commitCount)).toBe(4);
   });
 });

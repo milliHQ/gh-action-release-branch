@@ -56,9 +56,12 @@ module.exports = async function gitStripMerge(
     cwd,
   });
 
-  await git.rm(files);
-  // await git.raw(['rm', '-rf', ...excludePaths]);
-  await git.commit(deleteCommitMessage);
+  // Running git rm without any paths would fail
+  if (files.length > 0) {
+    await git.rm(files);
+    await git.commit(deleteCommitMessage);
+  }
+
   const newSha = await git.revparse('HEAD');
   await git.checkout(original);
   await git.merge(['-m', mergeCommitMessage, newSha, '--no-ff']);
