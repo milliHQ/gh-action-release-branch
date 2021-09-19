@@ -25,10 +25,7 @@ module.exports = async function gitStripMerge(
   git,
   branch,
   excludePaths,
-  {
-    deleteCommitMessage = 'delete commit',
-    mergeCommitMessage = 'merge commit',
-  } = {}
+  { deleteCommitMessage = 'Release: exclude files' } = {}
 ) {
   async function gitBranch(refName) {
     // Get current head
@@ -66,5 +63,5 @@ module.exports = async function gitStripMerge(
 
   const newSha = await git.revparse('HEAD');
   await git.checkout(original);
-  await git.merge(['-m', mergeCommitMessage, newSha, '--no-ff']);
+  await git.merge([newSha, '--no-ff']);
 };

@@ -1,8 +1,8 @@
 {
-  "name": "@dealmore/gh-action-terraform-module-release",
+  "private": true,
   "version": "1.1.0",
   "license": "Apache-2.0",
-  "author": "DealMore",
+  "author": "milliVolt infrastructure",
   "scripts": {
     "test": "jest",
     "build": "ncc build -m src/index.js --license third-party-licenses.txt",
@@ -10,10 +10,11 @@
     "fix:prettier": "prettier --write ."
   },
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/exec": "^1.0.4",
-    "globby": "^11.0.2",
-    "simple-git": "^2.36.1"
+    "@actions/core": "1.5.0",
+    "@actions/exec": "1.1.0",
+    "@actions/github": "5.0.0",
+    "globby": "11.0.2",
+    "simple-git": "2.36.1"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.28.5",

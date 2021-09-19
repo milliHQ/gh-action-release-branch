@@ -1,34 +1,24 @@
-const path = require('path');
 const core = require('@actions/core');
+const github = require('@actions/github');
 const simpleGit = require('simple-git');
 
 const stripMerge = require('./git-strip-merge.js');
+const { getInputAsArray } = require('./utils.js');
 
 async function run() {
-  const baseDir = path.join(process.cwd());
+  const baseDir = process.cwd();
   const git = simpleGit({ baseDir });
   const releaseTag = core.getInput('release-tag', { required: true });
-  const excluded = core.getInput('exclude', { required: true });
+  const excludedPatterns = getInputAsArray('exclude', { required: true });
   const releaseBranchName = core.getInput('release-branch', { required: true });
-  const upstreamBranchName = core.getInput('upstream-branch', {
-    required: true,
-  });
+  // Upstream branch is the branch where the workflow is triggered from
+  // github.context.ref has the format refs/heads/<branch-name>
+  const upstreamBranchName = github.context.ref.substring('refs/heads/'.length);
 
-  let excludedPatterns = [];
-
-  // Try to parse the `exclude` input
-  try {
-    const parsed = JSON.parse(excluded);
-    if (
-      Array.isArray(parsed) &&
-      parsed.find((item) => typeof item !== 'string') === undefined
-    ) {
-      excludedPatterns = parsed;
-    }
-  } catch (error) {
-    if (excluded) {
-      excludedPatterns = [excluded];
-    }
+  if (!upstreamBranchName) {
+    core.setFailed(
+      `Failed to get the upstream branch name from the GitHub context. Got: ${github.context.ref}`
+    );
   }
 
   // Push commits & tags on behalf of GitHub Actions bot
